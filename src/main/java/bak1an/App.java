@@ -7,14 +7,11 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.services.calendar.model.CalendarListEntry;
-import com.google.api.services.calendar.model.Event;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
-import java.util.List;
 
 
 public class App {
@@ -31,16 +28,7 @@ public class App {
 
         Calendar client = new Calendar.Builder(httpTransport, jsonFactory, credential).setApplicationName("sandbox").build();
 
-        List<CalendarListEntry> calendars = client.calendarList().list().execute().getItems();
-        for (CalendarListEntry c : calendars) {
-            System.out.printf("Calendar: %s\n", c.getId());
-            List<Event> events = client.events().list(c.getId()).execute().getItems();
-            System.out.printf("There are %d events\n", events.size());
-            for (Event e : events) {
-                System.out.printf("start: %s | end: %s | title: %s\n",
-                        e.getStart().getDateTime().toString(), e.getEnd().getDateTime().toString(), e.getSummary());
-            }
-            System.out.println("----------------------");
-        }
+        CalendarPrinter printer = new CalendarPrinter(client);
+        printer.printEvents();
     }
 }
